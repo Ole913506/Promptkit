@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PromptKit – Fertige KI-Prompts für Ihren Betrieb</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0c10;--bg2:#13131a;--bg3:#1a1a24;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#f0efe8;--text2:#a8a79e;--text3:#5a5a6a;
+  --gold:#c9a84c;--gold2:#e8c97a;--gold-dim:rgba(201,168,76,0.1);
+  --blue:#5b8dee;--blue-dim:rgba(91,141,238,0.1);
+  --green:#4caf7d;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+button,input{font-family:'DM Mono',monospace}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes flipIn{from{opacity:0;transform:rotateX(8deg) translateY(10px)}to{opacity:1;transform:rotateX(0) translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* ── HEADER ── */
+.topbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.75rem;border-bottom:1px solid var(--border);background:rgba(12,12,16,0.85);backdrop-filter:blur(12px)}
+.logo{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;letter-spacing:-.01em;display:flex;align-items:baseline;gap:.4rem}
+.logo .mark{width:9px;height:9px;border-radius:50%;background:var(--gold);display:inline-block;margin-right:.1rem}
+.logo span{color:var(--gold)}
+.topbar-sub{font-size:.62rem;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-top:.15rem}
+.topbar-right{font-size:.68rem;color:var(--text3)}
+
+/* ── HERO ── */
+.hero{padding:4rem 1.75rem 3rem;max-width:760px;margin:0 auto;text-align:left}
+.hero-eyebrow{font-size:.68rem;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+.hero-eyebrow::before{content:'';width:18px;height:1px;background:var(--gold)}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(1.9rem,5vw,2.7rem);font-weight:800;line-height:1.12;letter-spacing:-.01em;margin-bottom:1.1rem}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero p{font-size:.92rem;color:var(--text2);max-width:520px;line-height:1.75}
+
+/* ── BRANCHE SELECT ── */
+.branch-section{padding:0 1.75rem 3rem;max-width:1040px;margin:0 auto}
+.branch-label{font-size:.65rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem}
+.branch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.65rem}
+.branch-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.1rem .9rem;cursor:pointer;transition:all .2s;text-align:left;animation:fadeUp .4s ease backwards}
+.branch-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.branch-card.active{border-color:var(--gold);background:var(--gold-dim)}
+.branch-icon{font-size:1.5rem;margin-bottom:.5rem;display:block}
+.branch-name{font-size:.78rem;font-weight:500;color:var(--text)}
+.branch-card.active .branch-name{color:var(--gold)}
+
+/* ── CATEGORY TABS ── */
+.cat-section{padding:0 1.75rem;max-width:1040px;margin:0 auto;display:none}
+.cat-section.visible{display:block;animation:fadeUp .35s ease}
+.cat-tabs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:1.5rem;margin-bottom:.5rem}
+.cat-tab{flex-shrink:0;padding:.5rem 1rem;border-radius:2rem;font-size:.72rem;border:1px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .15s}
+.cat-tab:hover{border-color:var(--border2)}
+.cat-tab.active{border-color:var(--blue);background:var(--blue-dim);color:var(--blue)}
+
+/* ── PROMPT CARDS ── */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1rem;padding-bottom:5rem}
+.prompt-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1.4rem;display:flex;flex-direction:column;gap:.9rem;animation:flipIn .4s ease backwards;transition:border-color .2s}
+.prompt-card:hover{border-color:var(--border2)}
+.prompt-title{font-size:.84rem;font-weight:600;color:var(--text);display:flex;align-items:center;gap:.5rem}
+.prompt-title .num{font-size:.62rem;color:var(--text3);font-weight:400}
+.prompt-body{font-size:.76rem;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:.85rem .95rem;line-height:1.65;white-space:pre-wrap;flex:1}
+.prompt-footer{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.prompt-tag{font-size:.6rem;color:var(--text3);letter-spacing:.04em}
+.copy-btn{font-size:.7rem;padding:.45rem .9rem;border-radius:7px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.copy-btn:hover{border-color:var(--gold);color:var(--gold)}
+.copy-btn.copied{border-color:var(--green);color:var(--green);background:rgba(76,175,125,0.08)}
+
+/* ── EMPTY STATE ── */
+.empty-state{text-align:center;padding:4rem 1rem;color:var(--text3)}
+.empty-state .ico{font-size:2rem;margin-bottom:.75rem;opacity:.6}
+
+/* ── HOW-TO BANNER ── */
+.howto{margin:0 1.75rem 3rem;max-width:1040px;margin-left:auto;margin-right:auto;background:linear-gradient(135deg,rgba(201,168,76,0.06),transparent);border:1px solid rgba(201,168,76,0.18);border-radius:14px;padding:1.4rem 1.6rem;display:none}
+.howto.visible{display:block;animation:fadeUp .3s ease}
+.howto-title{font-size:.78rem;font-weight:600;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:.5rem}
+.howto-text{font-size:.74rem;color:var(--text2);line-height:1.7}
+
+/* ── FOOTER ── */
+.footer{text-align:center;padding:2rem;font-size:.68rem;color:var(--text3);border-top:1px solid var(--border)}
+.footer a{color:var(--gold);text-decoration:none}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:.65rem 1.2rem;border-radius:8px;font-size:.75rem;opacity:0;transition:all .25s;z-index:999;pointer-events:none;display:flex;align-items:center;gap:.5rem}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:640px){
+  .hero{padding:2.5rem 1.25rem 2rem}
+  .branch-section,.cat-section,.howto,.footer{padding-left:1.25rem;padding-right:1.25rem}
+  .prompt-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <div class="logo"><span class="mark"></span>Prompt<span>Kit</span></div>
+    <div class="topbar-sub">Fertige KI-Texte für Ihren Betrieb</div>
+  </div>
+  <div class="topbar-right" id="counter">0 Prompts</div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">Kein Konto · Keine Anmeldung · Einfach kopieren</div>
+  <h1>Wählen Sie Ihre Branche.<br>Kopieren Sie den <em>passenden Text.</em></h1>
+  <p>Jede Karte ist ein fertiger Text für ChatGPT oder ähnliche KI-Programme – speziell für Ihren Betrieb geschrieben. Sie tippen nur noch die Details ein, die in [eckigen Klammern] stehen.</p>
+</div>
+
+<div class="branch-section">
+  <div class="branch-label">Branche wählen</div>
+  <div class="branch-grid" id="branch-grid"></div>
+</div>
+
+<div class="cat-section" id="cat-section">
+  <div class="cat-tabs" id="cat-tabs"></div>
+  <div class="howto" id="howto">
+    <div class="howto-title">💡 So funktioniert's</div>
+    <div class="howto-text" id="howto-text"></div>
+  </div>
+  <div class="prompt-grid" id="prompt-grid"></div>
+</div>
+
+<div class="footer">
+  Ein Service von <a href="https://zyntiq.de" target="_blank">Zyntiq</a> · Fragen? <a href="mailto:hello@zyntiq.de">hello@zyntiq.de</a>
+</div>
+
+<div id="toast">✓ In die Zwischenablage kopiert</div>
+
+<script>
+// ── DATENBANK: BRANCHEN, KATEGORIEN, PROMPTS ────────────────────
+const DATA = {
+  friseur: {
+    icon: '💇', name: 'Friseur & Kosmetik',
+    howto: 'Öffnen Sie ChatGPT oder eine andere KI, fügen Sie den kopierten Text ein, ersetzen Sie die [Klammern] durch Ihre Angaben und drücken Sie Enter.',
+    categories: {
+      social: { label: 'Social Media', prompts: [
+        { title: 'Instagram-Post für neue Frisur', body: 'Schreibe mir eine kurze, ansprechende Instagram-Caption für ein Foto von [Frisur/Behandlung beschreiben, z.B. "Balayage in Honigblond"]. Ton: freundlich und einladend. Mit 3-5 passenden Hashtags am Ende. Maximal 4 Sätze.' },
+        { title: 'Ankündigung für Sonderangebot', body: 'Erstelle mir einen kurzen Social-Media-Text, der ein Sonderangebot ankündigt: [Angebot beschreiben, z.B. "20% auf Coloration im März"]. Soll Lust machen einen Termin zu buchen, aber nicht aufdringlich wirken.' },
+        { title: 'Wochenrückblick-Post', body: 'Schreibe mir einen lockeren Instagram-Text für einen Rückblick auf die Arbeit dieser Woche im Salon. Erwähne dass wir uns auf neue Kunden freuen. Locker, persönlich, wie von einer echten Person geschrieben.' },
+      ]},
+      kunden: { label: 'Kundenkommunikation', prompts: [
+        { title: 'Antwort auf Terminanfrage', body: 'Schreibe eine freundliche, professionelle Antwort auf eine Terminanfrage. Der Kunde möchte einen Termin für [Behandlung]. Biete an, dass er/sie anrufen kann unter [Telefonnummer] oder online buchen unter [Link].' },
+        { title: 'Antwort auf negative Bewertung', body: 'Ich habe eine negative Google-Bewertung erhalten: "[Bewertungstext einfügen]". Schreibe eine ruhige, professionelle Antwort, die sich für das Erlebnis entschuldigt, ohne Schuld einzugestehen, und anbietet das Gespräch persönlich fortzusetzen.' },
+        { title: 'Erinnerung an Folgetermin', body: 'Schreibe eine kurze, freundliche Nachricht (für WhatsApp oder SMS) an einen Kunden, der seit [Zeitraum, z.B. "8 Wochen"] nicht mehr da war, mit der Erinnerung dass eine Auffrischung anstehen könnte.' },
+      ]},
+      texte: { label: 'Allgemeine Texte', prompts: [
+        { title: 'Leistungsbeschreibung für Webseite', body: 'Schreibe eine ansprechende, kurze Beschreibung (3-4 Sätze) für folgende Dienstleistung auf unserer Webseite: [Dienstleistung, z.B. "Brautfrisuren"]. Soll professionell aber warm wirken.' },
+        { title: 'Stellenanzeige für Aushilfe', body: 'Erstelle eine kurze, freundliche Stellenanzeige für eine Aushilfskraft im Salon. Aufgaben: [Aufgaben einfügen]. Soll junge Bewerber ansprechen, locker formuliert.' },
+      ]},
+    }
+  },
+  handwerk: {
+    icon: '🔧', name: 'Handwerk',
+    howto: 'Öffnen Sie ChatGPT, fügen Sie den Text ein, tragen Sie Ihre Angaben in die [Klammern] ein und senden Sie die Nachricht ab.',
+    categories: {
+      angebote: { label: 'Angebote & Kostenvoranschlag', prompts: [
+        { title: 'Kostenvoranschlag formulieren', body: 'Ich bin [Handwerksberuf, z.B. "Heizungsbauer"]. Formuliere mir einen professionellen, freundlichen Text für ein Angebot per E-Mail an einen Kunden für folgenden Auftrag: [Auftrag beschreiben]. Erwähne dass der genaue Preis nach Besichtigung folgt.' },
+        { title: 'Nachfassen nach unbeantwortetem Angebot', body: 'Ich habe vor [Zeitraum] ein Angebot an einen Kunden geschickt und keine Antwort erhalten. Schreibe eine freundliche, nicht aufdringliche Erinnerungs-E-Mail.' },
+      ]},
+      kunden: { label: 'Kundenkommunikation', prompts: [
+        { title: 'Terminverschiebung ankündigen', body: 'Ich muss einen Kundentermin verschieben wegen [Grund, z.B. "Materiallieferung verzögert"]. Schreibe eine kurze, professionelle Nachricht die sich entschuldigt und einen neuen Termin vorschlägt: [neuer Termin].' },
+        { title: 'Reklamation professionell beantworten', body: 'Ein Kunde beschwert sich: "[Beschwerde einfügen]". Schreibe eine ruhige, lösungsorientierte Antwort, die Verständnis zeigt und einen konkreten nächsten Schritt anbietet.' },
+      ]},
+      texte: { label: 'Werbung & Texte', prompts: [
+        { title: 'Flyer-Text für neue Dienstleistung', body: 'Schreibe einen kurzen, überzeugenden Flyer-Text für folgende neue Dienstleistung: [Dienstleistung]. Zielgruppe: Privatkunden in der Region. Maximal 80 Wörter.' },
+        { title: 'Google-Profil-Beschreibung', body: 'Schreibe eine professionelle, suchmaschinenfreundliche Beschreibung (max. 200 Zeichen) für mein Google-Unternehmensprofil. Wir sind [Betrieb] und bieten [Leistungen] in [Ort/Region] an.' },
+      ]},
+    }
+  },
+  gastro: {
+    icon: '🍽️', name: 'Gastronomie',
+    howto: 'KI öffnen, Text einfügen, [Klammern] durch Ihre Angaben ersetzen, fertig.',
+    categories: {
+      social: { label: 'Social Media', prompts: [
+        { title: 'Tagesangebot-Post', body: 'Schreibe eine appetitliche, kurze Instagram-Caption für unser heutiges Tagesangebot: [Gericht beschreiben]. Locker, einladend, mit 1-2 Emojis und 3 passenden Hashtags.' },
+        { title: 'Event-Ankündigung', body: 'Erstelle einen Social-Media-Text für folgendes Event in unserem Restaurant: [Event beschreiben, z.B. "Live-Musik am Freitag"]. Soll neugierig machen und zur Reservierung animieren.' },
+      ]},
+      kunden: { label: 'Kundenkommunikation', prompts: [
+        { title: 'Antwort auf Reservierungsanfrage', body: 'Schreibe eine freundliche Antwort auf eine Reservierungsanfrage für [Personenzahl] Personen am [Datum/Zeit]. Bestätige oder biete eine Alternative an, falls der Termin ausgebucht ist.' },
+        { title: 'Antwort auf Bewertung', body: 'Ich habe folgende Google-Bewertung erhalten: "[Bewertungstext]". Schreibe eine warme, persönliche Antwort die zur Bewertung passt (egal ob positiv oder negativ).' },
+      ]},
+      texte: { label: 'Speisekarte & Texte', prompts: [
+        { title: 'Gerichtsbeschreibung für Speisekarte', body: 'Schreibe eine appetitliche Beschreibung (1-2 Sätze) für folgendes Gericht: [Gericht und Zutaten]. Soll Lust aufs Probieren machen, ohne übertrieben zu klingen.' },
+      ]},
+    }
+  },
+  arztpraxis: {
+    icon: '🩺', name: 'Arzt- & Therapiepraxis',
+    howto: 'KI öffnen, Text einfügen, [Klammern] ausfüllen. Bitte beachten: Bei medizinischen Inhalten immer fachlich prüfen, KI ersetzt keine medizinische Beratung.',
+    categories: {
+      kunden: { label: 'Patientenkommunikation', prompts: [
+        { title: 'Antwort auf Terminanfrage', body: 'Schreibe eine freundliche, professionelle Antwort auf eine Terminanfrage für [Behandlung/Anliegen]. Erkläre kurz wie ein Termin vereinbart werden kann (Telefon: [Nummer] oder online: [Link]).' },
+        { title: 'Erinnerung an Folgetermin', body: 'Schreibe eine kurze, freundliche Erinnerung an einen Patienten, der einen Folgetermin für [Behandlung] vereinbaren sollte. Nicht drängend, aber klar.' },
+        { title: 'Absage wegen Krankheit/Urlaub', body: 'Schreibe eine professionelle Nachricht, die ankündigt dass die Praxis vom [Datum] bis [Datum] wegen [Grund] geschlossen ist, mit Hinweis auf Vertretung oder Notfallnummer.' },
+      ]},
+      texte: { label: 'Praxis-Texte', prompts: [
+        { title: 'Leistungsbeschreibung für Webseite', body: 'Schreibe eine verständliche, vertrauenswürdige Beschreibung (3-4 Sätze) für folgende Behandlung auf unserer Webseite: [Behandlung]. Ohne Fachjargon, für Laien verständlich.' },
+        { title: 'Willkommenstext für neue Patienten', body: 'Schreibe einen warmen, professionellen Begrüßungstext für neue Patienten unserer Praxis, der Vertrauen schafft und die wichtigsten Infos zum Ablauf des ersten Termins enthält.' },
+      ]},
+    }
+  },
+  einzelhandel: {
+    icon: '🛍️', name: 'Einzelhandel',
+    howto: 'KI öffnen, Text einfügen, [Klammern] ausfüllen, abschicken.',
+    categories: {
+      social: { label: 'Social Media', prompts: [
+        { title: 'Produkt-Vorstellung', body: 'Schreibe eine ansprechende Instagram-Caption für ein neues Produkt: [Produkt beschreiben]. Locker, mit Kaufanreiz, 2-3 Hashtags.' },
+        { title: 'Sale-Ankündigung', body: 'Erstelle einen kurzen, überzeugenden Text für eine Rabattaktion: [Aktion beschreiben]. Soll Dringlichkeit erzeugen ohne aufdringlich zu wirken.' },
+      ]},
+      kunden: { label: 'Kundenkommunikation', prompts: [
+        { title: 'Antwort auf Produktanfrage', body: 'Ein Kunde fragt per E-Mail nach Verfügbarkeit von [Produkt]. Schreibe eine freundliche, hilfreiche Antwort, die auch alternative Produkte vorschlägt falls nicht verfügbar.' },
+        { title: 'Reklamation/Umtausch beantworten', body: 'Ein Kunde möchte folgendes Produkt umtauschen: "[Anliegen einfügen]". Schreibe eine kulante, professionelle Antwort die unsere Umtauschregelung erklärt: [Regelung].' },
+      ]},
+    }
+  },
+  beratung: {
+    icon: '💼', name: 'Beratung & Dienstleistung',
+    howto: 'KI öffnen, Text einfügen, [Klammern] ausfüllen.',
+    categories: {
+      kunden: { label: 'Kundenkommunikation', prompts: [
+        { title: 'Erstgespräch-Zusammenfassung', body: 'Hier sind meine Notizen aus einem Erstgespräch mit einem Kunden: [Notizen einfügen]. Fasse das in einer professionellen, strukturierten E-Mail an den Kunden zusammen mit den nächsten Schritten.' },
+        { title: 'Angebot formulieren', body: 'Formuliere ein professionelles Angebot für folgende Dienstleistung: [Leistung beschreiben]. Ton: kompetent und vertrauenswürdig, nicht zu werblich.' },
+      ]},
+      texte: { label: 'Texte & Marketing', prompts: [
+        { title: 'LinkedIn-Beitrag', body: 'Schreibe einen kurzen, fachlich fundierten LinkedIn-Beitrag zum Thema [Thema]. Soll Expertise zeigen ohne zu werblich zu wirken. Mit einer Frage am Ende, die zur Diskussion anregt.' },
+        { title: 'Leistungsseite für Webseite', body: 'Schreibe einen überzeugenden Text (4-5 Sätze) für die Leistungsseite meiner Webseite zum Thema [Dienstleistung]. Soll Vertrauen schaffen und zum Kontakt aufrufen.' },
+      ]},
+    }
+  },
+};
+
+let currentBranch = null;
+let currentCat = null;
+let totalPrompts = 0;
+
+// ── INIT ──────────────────────────────────────────────────────
+function init() {
+  Object.values(DATA).forEach(b => Object.values(b.categories).forEach(c => totalPrompts += c.prompts.length));
+  document.getElementById('counter').textContent = totalPrompts + ' Prompts';
+
+  const grid = document.getElementById('branch-grid');
+  grid.innerHTML = Object.entries(DATA).map(([key, b], i) =>
+    `<button class="branch-card" style="animation-delay:${i * 0.04}s" onclick="selectBranch('${key}')">
+      <span class="branch-icon">${b.icon}</span>
+      <span class="branch-name">${b.name}</span>
+    </button>`
+  ).join('');
+}
+
+function selectBranch(key) {
+  currentBranch = key;
+  document.querySelectorAll('.branch-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  const branch = DATA[key];
+  const catKeys = Object.keys(branch.categories);
+  currentCat = catKeys[0];
+
+  document.getElementById('cat-tabs').innerHTML = catKeys.map(ck =>
+    `<button class="cat-tab ${ck === currentCat ? 'active' : ''}" onclick="selectCat('${ck}', this)">${branch.categories[ck].label}</button>`
+  ).join('');
+
+  document.getElementById('howto-text').textContent = branch.howto;
+  document.getElementById('howto').classList.add('visible');
+  document.getElementById('cat-section').classList.add('visible');
+
+  renderPrompts();
+  document.getElementById('cat-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function selectCat(key, el) {
+  currentCat = key;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderPrompts();
+}
+
+function renderPrompts() {
+  const branch = DATA[currentBranch];
+  const cat = branch.categories[currentCat];
+  const grid = document.getElementById('prompt-grid');
+
+  if (!cat.prompts.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="ico">📋</div>Noch keine Prompts in dieser Kategorie</div>`;
+    return;
+  }
+
+  grid.innerHTML = cat.prompts.map((p, i) => `
+    <div class="prompt-card" style="animation-delay:${i * 0.05}s">
+      <div class="prompt-title"><span class="num">${String(i+1).padStart(2,'0')}</span> ${p.title}</div>
+      <div class="prompt-body">${p.body}</div>
+      <div class="prompt-footer">
+        <span class="prompt-tag">${branch.icon} ${branch.name}</span>
+        <button class="copy-btn" onclick="copyPrompt(this, \`${p.body.replace(/`/g,"'")}\`)">📋 Kopieren</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function copyPrompt(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const original = btn.innerHTML;
+    btn.innerHTML = '✓ Kopiert';
+    btn.classList.add('copied');
+    showToast();
+    setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 1800);
+  });
+}
+
+let toastTimer;
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+init();
+</script>
+</body>
+</html>
