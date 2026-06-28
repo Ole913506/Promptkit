@@ -333,25 +333,30 @@ function renderPrompts() {
       <div class="prompt-body">${p.body}</div>
       <div class="prompt-footer">
         <span class="prompt-tag">${branch.icon} ${branch.name}</span>
-        <button class="copy-btn" onclick="copyPrompt(this, \`${p.body.replace(/`/g,"'")}\`)">📋 Kopieren</button>
+        <button class="copy-btn" data-prompt="${encodeURIComponent(p.body)}" onclick="copyPrompt(this)">📋 Kopieren</button>
       </div>
     </div>
   `).join('');
 }
 
-function copyPrompt(btn, text) {
+function copyPrompt(btn) {
+  const text = decodeURIComponent(btn.getAttribute('data-prompt'));
   navigator.clipboard.writeText(text).then(() => {
     const original = btn.innerHTML;
     btn.innerHTML = '✓ Kopiert';
     btn.classList.add('copied');
     showToast();
     setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 1800);
+  }).catch(() => {
+    showToast('✗ Kopieren fehlgeschlagen — bitte Text manuell markieren');
   });
 }
 
 let toastTimer;
-function showToast() {
+function showToast(msg) {
   const t = document.getElementById('toast');
+  if (msg) t.textContent = msg;
+  else t.textContent = '✓ In die Zwischenablage kopiert';
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
